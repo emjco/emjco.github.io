@@ -1,99 +1,297 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>EMJCO Portfolio</title>
+  <title>EMJCO Portfolio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 0;
-            padding: 60px 20px;
-        }
+  <style>
+    :root{
+      --bg: #ffffff;
+      --text: #111111;
+      --muted: rgba(17,17,17,0.65);
+      --card: rgba(0,0,0,0.03);
+      --line: rgba(0,0,0,0.08);
+      --glow: rgba(0,0,0,0.08);
+    }
 
-        h1 {
-            margin-bottom: 10px;
-        }
+    body.dark{
+      --bg: #0b0b0f;
+      --text: #f4f4f5;
+      --muted: rgba(244,244,245,0.70);
+      --card: rgba(255,255,255,0.06);
+      --line: rgba(255,255,255,0.10);
+      --glow: rgba(255,255,255,0.10);
+    }
 
-        p.subtitle {
-            margin-bottom: 40px;
-            color: #555;
-        }
+    *{ box-sizing: border-box; }
 
-        /* Menu bar */
-        .menu {
-            font-size: 20px;
-            margin-bottom: 40px;
-        }
+    body{
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      padding: 70px 18px;
+      overflow-x: hidden;
+    }
 
-        .menu span {
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-block;
-            margin: 0 10px;
-        }
+    /* Cursor glow */
+    .glow{
+      position: fixed;
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      pointer-events: none;
+      background: radial-gradient(circle, var(--glow) 0%, transparent 60%);
+      transform: translate(-50%, -50%);
+      filter: blur(6px);
+      z-index: 0;
+      opacity: 1;
+      transition: opacity 0.3s ease;
+    }
 
-        /* Hover effect */
-        .menu span:hover {
-            transform: scale(1.2);
-            opacity: 0.6;
-        }
+    .wrap{
+      width: 100%;
+      max-width: 900px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
 
-        /* Preview section */
-        #preview {
-            margin-top: 30px;
-            font-size: 18px;
-            min-height: 120px;
-            transition: all 0.3s ease;
-        }
+    /* Dark mode toggle */
+    .topbar{
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 2;
+    }
 
-        .languages {
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-    </style>
+    .toggle{
+      border: 1px solid var(--line);
+      background: var(--card);
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      font-size: 14px;
+    }
+
+    .toggle:hover{
+      transform: scale(1.03);
+      opacity: 0.85;
+    }
+
+    h1{
+      margin: 0 0 10px 0;
+      letter-spacing: 0.3px;
+    }
+
+    .subtitle{
+      margin: 0 0 28px 0;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    /* Menu */
+    .menu{
+      display: flex;
+      justify-content: center;
+      gap: 26px;
+      flex-wrap: wrap;
+      font-size: 18px;
+      margin-bottom: 26px;
+    }
+
+    .menu button{
+      all: unset;
+      cursor: pointer;
+      position: relative;
+      display: inline-block;
+      padding: 6px 2px;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+      opacity: 0.95;
+    }
+
+    /* magnify + translucent on hover */
+    .menu button:hover{
+      transform: scale(1.18);
+      opacity: 0.6;
+    }
+
+    /* underline animation */
+    .menu button::after{
+      content:"";
+      position: absolute;
+      left: 0;
+      bottom: -6px;
+      height: 2px;
+      width: 0%;
+      background: var(--text);
+      opacity: 0.35;
+      transition: width 0.25s ease;
+    }
+
+    .menu button:hover::after{
+      width: 100%;
+    }
+
+    /* Preview card */
+    .preview{
+      width: 100%;
+      max-width: 720px;
+      margin: 0 auto;
+      border: 1px solid var(--line);
+      background: var(--card);
+      border-radius: 16px;
+      padding: 26px 22px;
+      text-align: left;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: transform 0.35s ease;
+      min-height: 180px;
+    }
+
+    .preview:hover{
+      transform: translateY(-2px);
+    }
+
+    .title{
+      font-size: 18px;
+      margin: 0 0 12px 0;
+      letter-spacing: 0.2px;
+    }
+
+    .text{
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 15px;
+    }
+
+    .list{
+      margin: 10px 0 0 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    /* Fade transition for preview content */
+    .fade-out{
+      opacity: 0;
+      transform: translateY(2px);
+      transition: opacity 0.18s ease, transform 0.18s ease;
+    }
+
+    .fade-in{
+      opacity: 1;
+      transform: translateY(0px);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+  </style>
 </head>
 
 <body>
+  <div class="glow" id="glow"></div>
 
+  <div class="topbar">
+    <button class="toggle" onclick="toggleDark()">Toggle Dark</button>
+  </div>
+
+  <div class="wrap">
     <h1>Hello, I’m EMJCO 👋</h1>
     <p class="subtitle">Welcome to my portfolio.</p>
 
     <div class="menu">
-        <span onmouseover="showAbout()">About Me</span> |
-        <span onmouseover="showServices()">Services</span> |
-        <span onmouseover="showProjects()">Projects</span> |
-        <span onmouseover="showContact()">Contact Me</span>
+      <button onmouseenter="setPreview('about')">About Me</button>
+      <button onmouseenter="setPreview('services')">Services</button>
+      <button onmouseenter="setPreview('projects')">Projects</button>
+      <button onmouseenter="setPreview('contact')">Contact Me</button>
     </div>
 
-    <div id="preview">
-        <div class="languages">Languages</div>
-        HTML<br>
-        CSS<br>
-        JavaScript
+    <div class="preview fade-in" id="preview">
+      <h3 class="title">Languages</h3>
+      <ul class="list">
+        <li>HTML</li>
+        <li>CSS</li>
+        <li>JavaScript</li>
+      </ul>
     </div>
+  </div>
 
-<script>
-function showAbout() {
-    document.getElementById("preview").innerHTML =
-    "<h3>About Me</h3><p>I am building modern, simple and functional websites while growing my skills in development.</p>";
-}
+  <script>
+    // Cursor glow follow
+    const glow = document.getElementById("glow");
+    window.addEventListener("mousemove", (e) => {
+      glow.style.left = e.clientX + "px";
+      glow.style.top = e.clientY + "px";
+    });
 
-function showServices() {
-    document.getElementById("preview").innerHTML =
-    "<h3>Services</h3><p>Website Creation<br>Virtual Assistance<br>Online Support</p>";
-}
+    // Dark mode toggle
+    function toggleDark(){
+      document.body.classList.toggle("dark");
+    }
 
-function showProjects() {
-    document.getElementById("preview").innerHTML =
-    "<h3>Projects</h3><p>Portfolio Website<br>Upcoming Client Projects</p>";
-}
+    // Preview content
+    const content = {
+      about: `
+        <h3 class="title">About Me</h3>
+        <p class="text">
+          I build modern, clean websites and I’m growing my skills in web development.
+          I focus on simple design, clarity, and user-friendly layout.
+        </p>
+      `,
+      services: `
+        <h3 class="title">Services</h3>
+        <p class="text">What I can help with:</p>
+        <ul class="list">
+          <li>Simple website creation (portfolio / landing pages)</li>
+          <li>Website edits & updates</li>
+          <li>Virtual assistance & online support</li>
+        </ul>
+      `,
+      projects: `
+        <h3 class="title">Projects</h3>
+        <p class="text">A few things I’m working on (more coming soon):</p>
+        <ul class="list">
+          <li>This portfolio website (GitHub Pages)</li>
+          <li>Landing page layouts</li>
+          <li>Practice web components</li>
+        </ul>
+      `,
+      contact: `
+        <h3 class="title">Contact Me</h3>
+        <p class="text">
+          Email: <strong>your@email.com</strong><br>
+          (Replace with your real email)
+        </p>
+      `
+    };
 
-function showContact() {
-    document.getElementById("preview").innerHTML =
-    "<h3>Contact Me</h3><p>Email: your@email.com</p>";
-}
-</script>
+    let currentKey = "languages";
 
+    function setPreview(key){
+      const preview = document.getElementById("preview");
+
+      // prevent re-fading if you hover same one repeatedly
+      if (currentKey === key) return;
+      currentKey = key;
+
+      // fade out then swap then fade in
+      preview.classList.remove("fade-in");
+      preview.classList.add("fade-out");
+
+      setTimeout(() => {
+        preview.innerHTML = content[key];
+        preview.classList.remove("fade-out");
+        preview.classList.add("fade-in");
+      }, 180);
+    }
+  </script>
 </body>
 </html>
